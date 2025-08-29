@@ -6,7 +6,8 @@ CHAT_PATH = os.getenv("CHAT_PATH", "/v1/chat/completions")
 MODEL_NAME = os.getenv("MODEL_NAME", "local")
 API_KEY = os.getenv("API_KEY")
 
-ART = pathlib.Path("artifacts"); ART.mkdir(exist_ok=True, parents=True)
+ART_DIR = os.environ.get("ART_DIR") or ("/tmp/artifacts" if os.environ.get("VERCEL") else "artifacts")
+ART = pathlib.Path(ART_DIR); ART.mkdir(exist_ok=True, parents=True)
 LAST = ART / "llm_last.txt"
 
 def _strip(txt: str) -> str:
