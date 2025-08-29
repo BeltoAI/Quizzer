@@ -53,7 +53,7 @@ def _client_or_401() -> CanvasClient:
 
 def _resolve_course_id(client: CanvasClient, cid: Optional[int]) -> int:
     if cid: return int(cid)
-    courses = client.list_courses()
+    courses = await client.list_courses()
     if not courses:
         raise HTTPException(status_code=404, detail="No courses found for this token.")
     return int(courses[0]["id"])
@@ -77,6 +77,7 @@ class GenerateQuizBody(BaseModel):
     file_ids: Optional[List[int]] = None
     assignment_ids: Optional[List[int]] = None
     quiz_count: Optional[int] = 20
+_AUTH: dict = {}  # in-memory creds (stateless on serverless)
 
 class GenerateMidtermBody(BaseModel):
     canvas_base_url: Optional[str] = None
@@ -416,16 +417,40 @@ def _generate_from_corpus(corpus: str, want: int, default_title: str, system_pro
 
 # -------------------- Endpoints --------------------
 @app.post("/auth")
-async def auth(body: AuthBody):
-    _update_state_if_provided(body.canvas_base_url, body.canvas_token)
-    client = _client_or_401()
+async def auth(payload: dict):
+    """
+    Body: {"canvas_base_url"?, "canvas_token"}
+    - defaults base to https://canvas.instructure.com/
+    - validates token
+    - returns minimal course list for UI selection
+    """
+    from fastapi import HTTPException
+    from app.canvas import CanvasClient, CanvasError
+
+    base = (payload or {}).get("canvas_base_url") or "https://canvas.instructure.com/"
+    token = ((payload or {}).get("canvas_token") or "").strip()
+    if not token:
+        raise HTTPException(status_code=400, detail="canvas_token is required")
+
+    client = CanvasClient(base, token)
     try:
         await client.validate_token()
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Canvas error: {e}")
-    courses = client.list_courses()
-    return {"ok": True, "courses": courses}
+        # also return courses for the UI
+        courses = await client.list_courses()
+    except CanvasError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    finally:
+        try:
+            await client.close()
+        except Exception:
+            pass
 
+    # store creds in-process (serverless note: ephemeral; UI must send on each call)
+    global _AUTH
+    _AUTH = {"canvas_base_url": base, "canvas_token": token}
+
+    # return plain JSON (no pydantic model to avoid serialization surprises)
+    return {"ok": True, "canvas_base_url": base, "courses": courses}
 @app.post("/modules")
 def modules(body: ModulesBody):
     _update_state_if_provided(body.canvas_base_url, body.canvas_token)
