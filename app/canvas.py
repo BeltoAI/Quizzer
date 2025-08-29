@@ -38,7 +38,12 @@ class CanvasClient:
         except httpx.HTTPStatusError:
             raise CanvasError(f"Canvas error: {r.text}")
 
-    # -------- Modules + items --------
+    
+    async def ping(self) -> None:
+        """Alias used by /auth; validates token by hitting Canvas."""
+        return await self.validate_token()
+
+# -------- Modules + items --------
     async def list_modules_with_items(self, course_id: int) -> List[Dict[str, Any]]:
         r = await self._client.get(f"api/v1/courses/{course_id}/modules", params={"per_page": 100})
         r.raise_for_status()
