@@ -420,7 +420,7 @@ def auth(body: AuthBody):
     _update_state_if_provided(body.canvas_base_url, body.canvas_token)
     client = _client_or_401()
     try:
-        client.validate_token()
+        await client.validate_token()
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Canvas error: {e}")
     courses = client.list_courses()

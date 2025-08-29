@@ -43,6 +43,20 @@ class CanvasClient:
         """Alias used by /auth; validates token by hitting Canvas."""
         return await self.validate_token()
 
+
+    # -------- Courses --------
+    async def list_courses(self) -> list[dict]:
+        """Return a minimal list of courses the token can see (id, name)."""
+        r = await self._client.get("api/v1/courses", params={"per_page": 100})
+        r.raise_for_status()
+        out = []
+        for c in (r.json() or []):
+            out.append({
+                "id": c.get("id"),
+                "name": c.get("name") or c.get("course_code") or str(c.get("id"))
+            })
+        return out
+
 # -------- Modules + items --------
     async def list_modules_with_items(self, course_id: int) -> List[Dict[str, Any]]:
         r = await self._client.get(f"api/v1/courses/{course_id}/modules", params={"per_page": 100})
