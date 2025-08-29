@@ -1,9 +1,7 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "public": "static",
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+    { "source": "/", "destination": "/static/index.html" },
     { "source": "/auth", "destination": "/api/index" },
     { "source": "/modules", "destination": "/api/index" },
     { "source": "/generate/quiz", "destination": "/api/index" },
