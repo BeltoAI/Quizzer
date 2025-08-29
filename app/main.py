@@ -416,7 +416,7 @@ def _generate_from_corpus(corpus: str, want: int, default_title: str, system_pro
 
 # -------------------- Endpoints --------------------
 @app.post("/auth")
-def auth(body: AuthBody):
+async def auth(body: AuthBody):
     _update_state_if_provided(body.canvas_base_url, body.canvas_token)
     client = _client_or_401()
     try:
