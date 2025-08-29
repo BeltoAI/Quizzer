@@ -1,14 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.11",
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  },
+  "public": "static",
   "rewrites": [
-    { "source": "/", "destination": "/static/index.html" },
+    { "source": "/", "destination": "/index.html" },
     { "source": "/auth", "destination": "/api/index" },
     { "source": "/modules", "destination": "/api/index" },
     { "source": "/generate/quiz", "destination": "/api/index" },
