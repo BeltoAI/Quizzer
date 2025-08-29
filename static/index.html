@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Canvas Quiz/Midterm Generator</title>
+<link rel="stylesheet" href="/static/styles.css"/>
+</head><body>
+<div class="container">
+  <h1>Canvas Quiz/Midterm Generator</h1>
+
+  <section class="card">
+    <h2>Canvas Credentials</h2>
+    <div class="grid">
+      <label>Canvas Base URL
+        <input id="baseUrl" type="text" value="https://canvas.instructure.com/"/>
+      </label>
+      <label>Canvas Token
+        <input id="token" type="password" placeholder="Paste token"/>
+      </label>
+      <label>Course
+        <select id="courseSelect" disabled><option value="">Authenticate to load courses…</option></select>
+      </label>
+    </div>
+    <div class="row">
+      <button id="btnAuth">Authenticate</button>
+      <span id="authStatus" class="status"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row space-between sticky">
+      <div class="row" style="gap:8px">
+        <h2 style="margin:0">Modules & Items</h2>
+        <button id="btnSelectFiltered" class="btn-ghost">Select filtered</button>
+        <button id="btnClearFiltered" class="btn-ghost">Clear filtered</button>
+      </div>
+      <input id="searchItems" class="search" type="text" placeholder="Filter items… (title/type)"/>
+    </div>
+    <div class="row">
+      <button id="btnLoadModules" disabled>Load modules</button>
+      <span id="modulesStatus" class="status"></span>
+    </div>
+    <div id="modulesContainer"></div>
+    <div id="warnBox" class="status warn" style="margin-top:8px;"></div>
+  </section>
+
+  <section class="card">
+    <h2>Generate</h2>
+    <div class="row">
+      <label>Quiz count
+        <input id="quizCount" type="number" value="20" min="1" max="200"/>
+      </label>
+      <button id="btnGenQuiz" disabled>Generate quiz</button>
+      <button id="btnGenMidterm" disabled>Generate midterm</button>
+      <span id="genStatus" class="status"></span>
+    </div>
+
+    <div class="two-col">
+      <div class="output" id="quizBox">
+        <div class="header row space-between">
+          <h3 style="margin:0">Quiz</h3>
+          <div class="row">
+            <button class="btn-ghost small" id="btnCopyQuiz">Copy JSON</button>
+            <button class="btn-ghost small" id="btnDownloadQuiz">Download JSON</button>
+            <button id="btnPublishQuiz" disabled>Publish</button>
+          </div>
+        </div>
+        <div class="tabs" data-scope="quiz">
+          <button class="tab active" data-target="quizPretty">Pretty</button>
+          <button class="tab" data-target="quizJson">JSON</button>
+          <span class="count" id="quizCountBadge"></span>
+        </div>
+        <div class="panel active" id="quizPretty"><div class="pretty-body empty">No quiz yet. Generate to see results.</div></div>
+        <div class="panel" id="quizJson"><pre id="quizOut" class="code"></pre></div>
+        <div class="row"><span id="pubQuizStatus" class="status"></span></div>
+      </div>
+
+      <div class="output" id="midtermBox">
+        <div class="header row space-between">
+          <h3 style="margin:0">Midterm</h3>
+          <div class="row">
+            <button class="btn-ghost small" id="btnCopyMidterm">Copy JSON</button>
+            <button class="btn-ghost small" id="btnDownloadMidterm">Download JSON</button>
+            <button id="btnPublishMidterm" disabled>Publish</button>
+          </div>
+        </div>
+        <div class="tabs" data-scope="midterm">
+          <button class="tab active" data-target="midtermPretty">Pretty</button>
+          <button class="tab" data-target="midtermJson">JSON</button>
+          <span class="count" id="midtermCountBadge"></span>
+        </div>
+        <div class="panel active" id="midtermPretty"><div class="pretty-body empty">No midterm yet. Generate to see results.</div></div>
+        <div class="panel" id="midtermJson"><pre id="midtermOut" class="code"></pre></div>
+        <div class="row"><span id="pubMidtermStatus" class="status"></span></div>
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>Publish settings (optional)</legend>
+      <div class="grid">
+        <label>Published? <input id="setPublished" type="checkbox"/></label>
+        <label>Time limit (minutes) <input id="setTimeLimit" type="number" min="0"/></label>
+        <label>Due at (ISO8601) <input id="setDueAt" type="text" placeholder="2025-09-01T23:59:00Z"/></label>
+        <label>Shuffle answers? <input id="setShuffle" type="checkbox"/></label>
+      </div>
+    </fieldset>
+  </section>
+</div>
+<script src="/static/app.js"></script>
+</body></html>

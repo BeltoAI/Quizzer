@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "functions": { "api/index.py": { "runtime": "python3.11", "maxDuration": 60, "memory": 1024 } },
+  "rewrites": [
+    { "source": "/", "destination": "/static/index.html" },
+    { "source": "/auth", "destination": "/api/index" },
+    { "source": "/modules", "destination": "/api/index" },
+    { "source": "/generate/quiz", "destination": "/api/index" },
+    { "source": "/generate/midterm", "destination": "/api/index" },
+    { "source": "/publish/quiz", "destination": "/api/index" },
+    { "source": "/publish/midterm", "destination": "/api/index" }
+  ]
+}
